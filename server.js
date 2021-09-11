@@ -3,12 +3,12 @@ const express = require('express')
 const app = express()
 const cors = require('cors');
 app.use(cors())
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8765;
 
 
 const weather = require('./Weather/weather.json')
 app.get('/',function (request, response) {
-  response.send('Hello From the other Side')
+  response.send('Hello From the other Sidee')
   })
 
   class Forecast {
