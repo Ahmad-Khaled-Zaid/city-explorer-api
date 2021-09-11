@@ -1,44 +1,53 @@
-
-
 'use strict';
 const express = require('express')
 const app = express()
 const cors = require('cors');
 app.use(cors())
+const PORT = process.env.PORT || 8080;
 
-const weather = require('./data/weather.json')
-app.get('/',
-  function (request, response) {
-    res.send('Hello World')
+
+const weather = require('./Weather/weather.json')
+app.get('/',function (request, response) {
+  response.send('Hello From the other Side')
   })
-class Forecast {
-  constructor(date, description) {
-    this.date = date;
-    this.description = description;
+
+  class Forecast {
+    constructor(weatherDiscription, date) {
+      this.weatherDiscription = weatherDiscription;
+      this.date = date;
+    }
   }
-
-}
-
-
-
-app.get('/get-weather', (request, response) => {
-
-  let city_name = req.query.city_name;
-  let lat = req.query.lat;
-  let lon = req.query.lon;
-
-  const newArr = weather.find((item) => {
-
-    return (item.city_name.toLowerCase() === city_name.toLowerCase())
+ 
+  app.get("/weather", (request, response) => {
+  
+    
+    const lon = request.query.lon;
+    const city_name = request.query.city_name;
+    const lat = request.query.lat;
+   
+  
+    if (city_name) {
+      const returnArray = weather.find((item) => {
+        return item.city_name.toLowerCase() === city_name;
+      });
+      let dataArr=returnArray.data.map((element) => {
+        return new Forecast(
+          ` Low of ${element.low_temp}, high of ${element.high_temp} with ${element.weather.weatherDiscription} `,
+          ` ${element.datetime}`
+        );
+      });
+  
+      if (dataArr.length) {
+        response.json(dataArr);
+      } else {
+        response.send("error: Something went wrong.");
+      }
+    } else {
+      response.json(weather);
+    }
   });
-  if (newArr) {
-    let newArr = newArr.data.map((item) => {
-      return new Forecast(item.data, item.weather.description);
-    })
-    res.json(newArr);
-  }
-  else {
-    res.json('data not found')
-  }
+    
 
-  app.listen(8080)
+app.listen(PORT, () => {
+  console.log(`${PORT}`);
+});
